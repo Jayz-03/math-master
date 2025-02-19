@@ -1,4 +1,3 @@
-<!-- Sub Header -->
 <div class="sub-header">
     <div class="container">
         <div class="row">
@@ -20,7 +19,6 @@
     </div>
 </div>
 
-<!-- ***** Header Area Start ***** -->
 <header class="header-area header-sticky">
     <div class="container">
         <div class="row">
@@ -31,17 +29,21 @@
                     </a>
                     <ul class="nav">
                         <li class="scroll-to-section"><a href="#top" class="active">Home</a></li>
-                        <li class="scroll-to-section"><a href="#discover">Discover</a></li> 
-                        <li class="scroll-to-section"><a href="#modules">Modules</a></li> 
-                        <li class="has-sub">
-                            <a href="javascript:void(0)">Math Master</a>
-                            <ul class="sub-menu">
-                                <li><a href="explore-topics">Explore Topics</a></li>
-                                <li><a href="play-challenges">Play Challenges</a></li>
-                            </ul>
-                        </li>
-                        <li class="scroll-to-section"><a href="#blog">Blog</a></li>
-                        <li class="scroll-to-section"><a href="#about">About</a></li>
+                        <li class="scroll-to-section"><a href="#explore">Explore Topics</a></li>
+                        <li class="scroll-to-section"><a href="#play">Play Challenges</a></li>
+                        <li class="scroll-to-section"><a href="#guide">Guide</a></li>
+                        <li class="scroll-to-section"><a href="#leaderboards">Leaderboards</a></li>
+                        <?php
+                        if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
+                            ?>
+                            <li><a href="signout">Signout</a></li>
+                            <?php
+                        } else {
+                            ?>
+                            <li class="scroll-to-section"><a href="#signup">Sign Up</a></li>
+                            <?php
+                        }
+                        ?>
                     </ul>
                     <a class='menu-trigger'>
                         <span>Menu</span>
@@ -51,4 +53,3 @@
         </div>
     </div>
 </header>
-<!-- ***** Header Area End ***** -->

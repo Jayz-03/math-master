@@ -1,3 +1,15 @@
+<?php
+session_start();
+
+require_once "DBConfig.php";
+
+if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
+    $sql = "SELECT * FROM users WHERE user_id = '" . $_SESSION['id'] . "'";
+    $result = mysqli_query($link, $sql);
+    $row = mysqli_fetch_assoc($result);
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,7 +18,6 @@
 </head>
 
 <body>
-    <!-- Sub Header -->
     <div class="sub-header">
         <div class="container">
             <div class="row">
@@ -28,7 +39,6 @@
         </div>
     </div>
 
-    <!-- ***** Header Area Start ***** -->
     <header class="header-area header-sticky">
         <div class="container">
             <div class="row">
@@ -39,13 +49,17 @@
                         </a>
                         <ul class="nav">
                             <li><a href="index">Home</a></li>
-                            <li class="has-sub">
-                                <a href="javascript:void(0)">Math Master</a>
-                                <ul class="sub-menu">
-                                    <li><a href="explore-topics">Explore Topics</a></li>
-                                    <li><a href="play-challenges">Play Challenges</a></li>
-                                </ul>
-                            </li>
+                            <?php
+                            if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
+                                ?>
+                                <li><a href="signout">Signout</a></li>
+                                <?php
+                            } else {
+                                ?>
+                                <li><a href="signin">Sign In</a></li>
+                                <?php
+                            }
+                            ?>
                         </ul>
                         <a class='menu-trigger'>
                             <span>Menu</span>
@@ -55,7 +69,6 @@
             </div>
         </div>
     </header>
-    <!-- ***** Header Area End ***** -->
 
     <section class="heading-page header-text" id="top">
         <div class="container">
@@ -90,13 +103,14 @@
                                             <div class="price">
                                                 <span>QUARTER I</span>
                                             </div>
-                                            <a href="meeting-details.html"><img src="assets/images/meeting-01.jpg" alt=""></a>
+                                            <a href="module-details?module=qtr1mod17"><img src="assets/images/q1.png"
+                                                    alt=""></a>
                                         </div>
                                         <div class="down-content">
                                             <div class="date">
                                                 <h6>MOD <span>17</span></h6>
                                             </div>
-                                            <a href="meeting-details.html">
+                                            <a href="module-details?module=qtr1mod17">
                                                 <h4>General Mathematics</h4>
                                             </a>
                                             <p>Exponential Functions, Equations and Inequalities</p>
@@ -109,13 +123,14 @@
                                             <div class="price">
                                                 <span>QUARTER III</span>
                                             </div>
-                                            <a href="meeting-details.html"><img src="assets/images/meeting-01.jpg" alt=""></a>
+                                            <a href="module-details?module=qtr3mod1"><img src="assets/images/q3.png"
+                                                    alt=""></a>
                                         </div>
                                         <div class="down-content">
                                             <div class="date">
                                                 <h6>MOD <span>1</span></h6>
                                             </div>
-                                            <a href="meeting-details.html">
+                                            <a href="module-details?module=qtr3mod1">
                                                 <h4>Statistics and Probability</h4>
                                             </a>
                                             <p>Random Variables and Probability Distributions</p>
@@ -128,13 +143,14 @@
                                             <div class="price">
                                                 <span>QUARTER I</span>
                                             </div>
-                                            <a href="meeting-details.html"><img src="assets/images/meeting-01.jpg" alt=""></a>
+                                            <a href="module-details?module=qtr1mod5"><img src="assets/images/q1.png"
+                                                    alt=""></a>
                                         </div>
                                         <div class="down-content">
                                             <div class="date">
                                                 <h6>MOD <span>5</span></h6>
                                             </div>
-                                            <a href="meeting-details.html">
+                                            <a href="module-details?module=qtr1mod5">
                                                 <h4>General Mathematics</h4>
                                             </a>
                                             <p>Rational Functions, Equations and Inequalities</p>
@@ -147,13 +163,14 @@
                                             <div class="price">
                                                 <span>QUARTER III</span>
                                             </div>
-                                            <a href="meeting-details.html"><img src="assets/images/meeting-01.jpg" alt=""></a>
+                                            <a href="module-details?module=qtr3mod2"><img src="assets/images/q3.png"
+                                                    alt=""></a>
                                         </div>
                                         <div class="down-content">
                                             <div class="date">
                                                 <h6>MOD <span>2</span></h6>
                                             </div>
-                                            <a href="meeting-details.html">
+                                            <a href="module-details?module=qtr3mod2">
                                                 <h4>Statistics and Probability</h4>
                                             </a>
                                             <p>Mean and Variance of Discrete Random Variable</p>
@@ -170,9 +187,6 @@
     </section>
 
     <?php include "partials/script.php"; ?>
-</body>
-
-
 </body>
 
 </html>

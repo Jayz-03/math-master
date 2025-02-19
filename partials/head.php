@@ -9,3 +9,5 @@
 <link rel="stylesheet" href="assets/css/owl.css">
 <link rel="stylesheet" href="assets/css/lightbox.css">
 <title>Math Master</title>
+<link type="image/png" href="assets/images/math-master.png" rel="icon">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
