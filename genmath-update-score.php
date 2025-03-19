@@ -15,7 +15,7 @@ if (isset($_SESSION['id'])) {
             if (empty($row['gen_math_1st_score'])) {
                 $update_sql = "UPDATE users SET gen_math_1st_score = '$score' WHERE user_id = '$user_id'";
             } else {
-                $update_sql = "UPDATE users SET gen_math_2nd_score = '$score' WHERE user_id = '$user_id'";
+                $update_sql = "UPDATE users SET gen_math_2nd_score = '$score', gen_math_score_datetime = NOW() WHERE user_id = '$user_id'";
             }
 
             if (mysqli_query($link, $update_sql)) {

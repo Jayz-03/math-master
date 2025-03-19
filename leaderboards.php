@@ -91,12 +91,21 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
                             <form id="contact" action="" method="post">
                                 <div class="row">
                                     <?php
-                                    // General Mathematics leaderboard query
-                                    $sql = "SELECT user_id, firstname, lastname, GREATEST(gen_math_1st_score, gen_math_2nd_score) AS highest_score
-        FROM users
-        WHERE gen_math_1st_score IS NOT NULL AND gen_math_2nd_score IS NOT NULL
-        ORDER BY highest_score DESC";
+                                    // Function to format the datetime
+                                    function formatDateTime($datetime)
+                                    {
+                                        return date("F d, Y - l - h:i:s A", strtotime($datetime));
+                                    }
 
+                                    // General Mathematics leaderboard query
+                                    $sql = "SELECT user_id, firstname, lastname, 
+            gen_math_2nd_score AS highest_score, 
+            gen_math_score_datetime AS achieved_on
+        FROM users
+        WHERE gen_math_2nd_score IS NOT NULL 
+        AND gen_math_score_datetime IS NOT NULL
+        ORDER BY highest_score DESC, achieved_on ASC"; // Order by score, then earliest datetime
+                                    
                                     $result = $link->query($sql);
 
                                     // Array to hold all users
@@ -109,11 +118,14 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
                                     }
 
                                     // Statistics & Probability leaderboard query
-                                    $sql2 = "SELECT user_id, firstname, lastname, GREATEST(stat_prob_1st_score, stat_prob_2nd_score) AS highest_score2
-         FROM users
-         WHERE stat_prob_1st_score IS NOT NULL AND stat_prob_2nd_score IS NOT NULL
-         ORDER BY highest_score2 DESC";
-
+                                    $sql2 = "SELECT user_id, firstname, lastname, 
+            stat_prob_2nd_score AS highest_score, 
+            stat_prob_score_datetime AS achieved_on
+        FROM users
+        WHERE stat_prob_2nd_score IS NOT NULL 
+        AND stat_prob_score_datetime IS NOT NULL
+        ORDER BY highest_score DESC, achieved_on ASC"; // Order by score, then earliest datetime
+                                    
                                     $result2 = $link->query($sql2);
 
                                     // Array to hold all users for statistics & probability
@@ -130,7 +142,7 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
                                     <div class="col-lg-6">
                                         <div class="row">
                                             <div class="col-lg-12">
-                                                <h2>General Mathematics Leaderboards</h2>
+                                                <h2 class="text-center">General Mathematics Leaderboards</h2>
                                             </div>
                                             <div class="col-lg-12">
                                                 <table class="table table-bordered">
@@ -138,7 +150,8 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
                                                         <tr>
                                                             <th>Rank</th>
                                                             <th>Name</th>
-                                                            <th>Highest Score</th>
+                                                            <th>Final Attempt Score</th>
+                                                            <th>Achieved On</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -149,8 +162,13 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
                                                                     <td><?php echo $user['firstname'] . " " . $user['lastname']; ?>
                                                                     </td>
                                                                     <td><?php echo $user['highest_score']; ?></td>
+                                                                    <td><?php echo formatDateTime($user['achieved_on']); ?></td>
                                                                 </tr>
                                                             <?php endforeach; ?>
+                                                        <?php else: ?>
+                                                            <tr>
+                                                                <td colspan="4" class="text-center">No records found</td>
+                                                            </tr>
                                                         <?php endif; ?>
                                                     </tbody>
                                                 </table>
@@ -162,7 +180,7 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
                                     <div class="col-lg-6">
                                         <div class="row">
                                             <div class="col-lg-12">
-                                                <h2>Statistics & Probability Leaderboards</h2>
+                                                <h2 class="text-center">Statistics & Probability Leaderboards</h2>
                                             </div>
                                             <div class="col-lg-12">
                                                 <table class="table table-bordered">
@@ -170,7 +188,8 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
                                                         <tr>
                                                             <th>Rank</th>
                                                             <th>Name</th>
-                                                            <th>Highest Score</th>
+                                                            <th>Final Attempt Score</th>
+                                                            <th>Achieved On</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -180,15 +199,22 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
                                                                     <td><?php echo $index2 + 1; ?></td>
                                                                     <td><?php echo $user2['firstname'] . " " . $user2['lastname']; ?>
                                                                     </td>
-                                                                    <td><?php echo $user2['highest_score2']; ?></td>
+                                                                    <td><?php echo $user2['highest_score']; ?></td>
+                                                                    <td><?php echo formatDateTime($user2['achieved_on']); ?>
+                                                                    </td>
                                                                 </tr>
                                                             <?php endforeach; ?>
+                                                        <?php else: ?>
+                                                            <tr>
+                                                                <td colspan="4" class="text-center">No records found</td>
+                                                            </tr>
                                                         <?php endif; ?>
                                                     </tbody>
                                                 </table>
                                             </div>
                                         </div>
                                     </div>
+
                                     <div class="col-12 text-center mt-5">
                                         <div class="main-button-red">
                                             <a href="index">Back to Home</a>

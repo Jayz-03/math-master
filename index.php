@@ -475,47 +475,54 @@ $active = "home";
     </section>
 
     <?php
-    $sql = "SELECT user_id, firstname, lastname, GREATEST(gen_math_1st_score, gen_math_2nd_score) AS highest_score
-        FROM users
-        WHERE gen_math_1st_score IS NOT NULL AND gen_math_2nd_score IS NOT NULL
-        ORDER BY highest_score DESC";
+    // Function to format the datetime
+    function formatDateTime($datetime)
+    {
+        return date("F d, Y - l - h:i:s A", strtotime($datetime));
+    }
 
+    // Fetch General Mathematics Rankings (Using Only gen_math_2nd_score)
+    $sql = "SELECT user_id, firstname, lastname, 
+        gen_math_2nd_score AS highest_score,
+        gen_math_score_datetime AS achieved_datetime
+    FROM users
+    WHERE gen_math_2nd_score IS NOT NULL 
+    AND gen_math_score_datetime IS NOT NULL
+    ORDER BY highest_score DESC, achieved_datetime ASC
+    LIMIT 3"; // Limit to top 3
+    
     $result = $link->query($sql);
 
-    $top6 = [];
-    $others = [];
-
+    $gen_math_rankings = [];
+    $rank = 1; // Start rank at 1
+    
     if ($result->num_rows > 0) {
-        $rank = 1;
         while ($row = $result->fetch_assoc()) {
-            if ($rank <= 6) {
-                $top6[] = $row;
-            } else {
-                $others[] = $row;
-            }
+            $row['rank'] = $rank;
+            $gen_math_rankings[] = $row;
             $rank++;
         }
     }
 
-
-    $sql2 = "SELECT user_id, firstname, lastname, GREATEST(stat_prob_1st_score, stat_prob_2nd_score) AS highest_score2
-        FROM users
-        WHERE stat_prob_1st_score IS NOT NULL AND stat_prob_2nd_score IS NOT NULL
-        ORDER BY highest_score2 DESC";
-
+    // Fetch Statistics & Probability Rankings (Using Only stat_prob_2nd_score)
+    $sql2 = "SELECT user_id, firstname, lastname, 
+        stat_prob_2nd_score AS highest_score,
+        stat_prob_score_datetime AS achieved_datetime
+    FROM users
+    WHERE stat_prob_2nd_score IS NOT NULL 
+    AND stat_prob_score_datetime IS NOT NULL
+    ORDER BY highest_score DESC, achieved_datetime ASC
+    LIMIT 3"; // Limit to top 3
+    
     $result2 = $link->query($sql2);
 
-    $top62 = [];
-    $others2 = [];
-
+    $stat_prob_rankings = [];
+    $rank2 = 1; // Start rank at 1
+    
     if ($result2->num_rows > 0) {
-        $rank2 = 1;
         while ($row2 = $result2->fetch_assoc()) {
-            if ($rank2 <= 6) {
-                $top62[] = $row2;
-            } else {
-                $others2[] = $row2;
-            }
+            $row2['rank'] = $rank2;
+            $stat_prob_rankings[] = $row2;
             $rank2++;
         }
     }
@@ -525,57 +532,53 @@ $active = "home";
         <div class="container">
             <div class="row">
                 <div class="col-lg-6">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <h2>General Mathematics Leaderboards</h2>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="row">
-                                <div class="col-12">
-                                    <?php if (count($top6) > 0): ?>
-                                        <?php foreach ($top6 as $index => $user): ?>
-                                            <div class="count-area-content">
-                                                <div class="count-digit"><?php echo $index + 1; ?></div>
-                                                <div class="count-title">
-                                                    <?php echo $user['firstname'] . " " . $user['lastname']; ?> - Score:
-                                                    <?php echo $user['highest_score']; ?>
-                                                </div>
-                                            </div>
-                                        <?php endforeach; ?>
-                                    <?php endif; ?>
+                    <h2 class="text-center">General Mathematics Leaderboards</h2>
+                    <div class="col-12">
+                        <?php if (count($gen_math_rankings) > 0): ?>
+                            <?php foreach ($gen_math_rankings as $student): ?>
+                                <div class="count-area-content">
+                                    <div class="count-digit"><?php echo $student['rank']; ?></div>
+                                    <div class="count-title">
+                                        <?php echo $student['firstname'] . " " . $student['lastname']; ?> - Final Attempt Score:
+                                        <?php echo $student['highest_score']; ?>
+                                        <br><small>Achieved on:
+                                            <?php echo formatDateTime($student['achieved_datetime']); ?></small>
+                                    </div>
                                 </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <div class="count-area-content">
+                                <div class="count-title" style="color: #ffc107;">No scores recorded yet.</div>
                             </div>
-                        </div>
+                        <?php endif; ?>
                     </div>
                 </div>
                 <div class="col-lg-6">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <h2>Statistics & Probability Leaderboards</h2>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="row">
-                                <div class="col-12">
-                                    <?php if (count($top62) > 0): ?>
-                                        <?php foreach ($top62 as $index2 => $user2): ?>
-                                            <div class="count-area-content">
-                                                <div class="count-digit"><?php echo $index2 + 1; ?></div>
-                                                <div class="count-title">
-                                                    <?php echo $user2['firstname'] . " " . $user2['lastname']; ?> - Score:
-                                                    <?php echo $user2['highest_score2']; ?>
-                                                </div>
-                                            </div>
-                                        <?php endforeach; ?>
-                                    <?php endif; ?>
+                    <h2 class="text-center">Statistics & Probability Leaderboards</h2>
+                    <div class="col-12">
+                        <?php if (count($stat_prob_rankings) > 0): ?>
+                            <?php foreach ($stat_prob_rankings as $student): ?>
+                                <div class="count-area-content">
+                                    <div class="count-digit"><?php echo $student['rank']; ?></div>
+                                    <div class="count-title">
+                                        <?php echo $student['firstname'] . " " . $student['lastname']; ?> - Final Attempt Score:
+                                        <?php echo $student['highest_score']; ?>
+                                        <br><small>Achieved on:
+                                            <?php echo formatDateTime($student['achieved_datetime']); ?></small>
+                                    </div>
                                 </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <div class="count-area-content">
+                                <div class="count-title" style="color: #ffc107;">No scores recorded yet.</div>
                             </div>
-                        </div>
+                        <?php endif; ?>
                     </div>
                 </div>
-                <div class="col-12 text-center mt-5">
-                    <div class="main-button-red">
-                        <a href="leaderboards">Show all leaderboards</a>
-                    </div>
+            </div>
+            <div class="col-12 text-center mt-5">
+                <div class="main-button-red">
+                    <a href="leaderboards">Show all leaderboards</a>
                 </div>
             </div>
         </div>
