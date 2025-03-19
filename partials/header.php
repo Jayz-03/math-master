@@ -40,7 +40,7 @@
                             <?php
                         } else {
                             ?>
-                            <li class="scroll-to-section"><a href="#signup">Sign Up</a></li>
+                            <li><a href="signin">Sign In/Sign Up</a></li>
                             <?php
                         }
                         ?>

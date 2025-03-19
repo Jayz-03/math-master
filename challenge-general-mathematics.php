@@ -7,9 +7,20 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
     $sql = "SELECT * FROM users WHERE user_id = '" . $_SESSION['id'] . "'";
     $result = mysqli_query($link, $sql);
     $row = mysqli_fetch_assoc($result);
-}// else {
-//     header("location: signin");
-// }
+} else {
+    header("location: signin");
+}
+
+$genmath_first_attempt = $row['gen_math_1st_score'];
+$genmath_second_attempt = $row['gen_math_2nd_score'];
+
+if ($genmath_first_attempt == "" && $genmath_second_attempt == "") {
+    $genmath_attempt = 1;
+} else if ($genmath_first_attempt != "" && $genmath_second_attempt == "") {
+    $genmath_attempt = 2;
+} else {
+    $genmath_attempt = 0;
+}
 ?>
 
 <!DOCTYPE html>
@@ -205,7 +216,7 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
         }
 
         .btn1:hover {
-            background:rgb(17, 122, 138);
+            background: rgb(17, 122, 138);
         }
 
         .solution-image {
@@ -314,7 +325,17 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
         <div class="container">
             <div class="start-screen">
                 <h1 class="heading">PLAY CHALLENGES!</h1>
-                <button class="btn start">Start Quiz</button>
+                <?php
+                if ($genmath_attempt == 0) {
+                    ?>
+                    <button class="btn start" disabled>No More Attempt</button>
+                    <?php
+                } else {
+                    ?>
+                    <button class="btn start">Start</button>
+                    <?php
+                }
+                ?>
             </div>
             <div class="quiz hide">
                 <div class="timer">
@@ -330,7 +351,7 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
                     <div class="question">This is a question?</div>
                 </div>
                 <div class="answer-wrapper"></div>
-                
+
                 <button class="btn1 toggle-solution hide">Show Solution</button>
                 <img class="solution-image hide" src="" alt="Solution Image">
 
@@ -347,7 +368,21 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
                         <span class="final-score">0</span> / 15
                     </div>
                 </div>
-                <button class="btn restart">Restart Quiz</button>
+                <?php
+                if ($genmath_attempt == 1) {
+                    ?>
+                    <button class="btn restart">
+                        Take 2nd Attempt
+                    </button>
+                    <?php
+                } else {
+                    ?>
+                    <a href="index" class="btn">
+                        No More Attempt | Back to Home
+                    </a>
+                    <?php
+                }
+                ?>
             </div>
         </div>
 
@@ -374,7 +409,7 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
                 progressText = document.querySelector(".progress-text");
 
             const progress = (value) => {
-                const percentage = (value / 120) * 100;
+                const percentage = (value / 180) * 100;
                 progressBar.style.width = `${percentage}%`;
                 progressText.innerHTML = `${value}`;
             };
@@ -387,7 +422,7 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
                 endScreen = document.querySelector(".end-screen"),
                 finalScore = document.querySelector(".final-score");
 
-            let time = 120, score = 0, currentQuestion = 0, timer;
+            let time = 180, score = 0, currentQuestion = 0, timer;
 
             const correctSound = new Audio("assets/sounds/correct.mp3");
             const wrongSound = new Audio("assets/sounds/wrong.mp3");
@@ -458,7 +493,7 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
             });
 
             const startTimer = () => {
-                time = 120;
+                time = 180;
                 progress(time);
                 clearInterval(timer);
                 timer = setInterval(() => {
@@ -532,6 +567,23 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
                 endScreen.classList.remove("hide");
                 quiz.classList.add("hide");
                 finalScore.textContent = score;
+
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "genmath-update-score.php", true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+                var user_id = <?php echo $_SESSION['id']; ?>;
+                var data = "user_id=" + user_id + "&score=" + score;
+
+                xhr.send(data);
+
+                xhr.onload = function () {
+                    if (xhr.status == 200) {
+                        console.log(xhr.responseText);
+                    } else {
+                        console.log("Error updating score");
+                    }
+                };
             }
 
             document.querySelector(".restart").addEventListener("click", () => {

@@ -474,462 +474,146 @@ $active = "home";
         </div>
     </section>
 
+    <?php
+    $sql = "SELECT user_id, firstname, lastname, GREATEST(gen_math_1st_score, gen_math_2nd_score) AS highest_score
+        FROM users
+        WHERE gen_math_1st_score IS NOT NULL AND gen_math_2nd_score IS NOT NULL
+        ORDER BY highest_score DESC";
+
+    $result = $link->query($sql);
+
+    $top6 = [];
+    $others = [];
+
+    if ($result->num_rows > 0) {
+        $rank = 1;
+        while ($row = $result->fetch_assoc()) {
+            if ($rank <= 6) {
+                $top6[] = $row;
+            } else {
+                $others[] = $row;
+            }
+            $rank++;
+        }
+    }
+
+
+    $sql2 = "SELECT user_id, firstname, lastname, GREATEST(stat_prob_1st_score, stat_prob_2nd_score) AS highest_score2
+        FROM users
+        WHERE stat_prob_1st_score IS NOT NULL AND stat_prob_2nd_score IS NOT NULL
+        ORDER BY highest_score2 DESC";
+
+    $result2 = $link->query($sql2);
+
+    $top62 = [];
+    $others2 = [];
+
+    if ($result2->num_rows > 0) {
+        $rank2 = 1;
+        while ($row2 = $result2->fetch_assoc()) {
+            if ($rank2 <= 6) {
+                $top62[] = $row2;
+            } else {
+                $others2[] = $row2;
+            }
+            $rank2++;
+        }
+    }
+    ?>
+
     <section class="our-facts" id="leaderboards">
         <div class="container">
             <div class="row">
                 <div class="col-lg-6">
                     <div class="row">
                         <div class="col-lg-12">
-                            <h2>Leaderboards</h2>
+                            <h2>General Mathematics Leaderboards</h2>
                         </div>
                         <div class="col-lg-6">
                             <div class="row">
                                 <div class="col-12">
-                                    <div class="count-area-content">
-                                        <div class="count-digit">1</div>
-                                        <div class="count-title">Ranking (to be continue)</div>
-                                    </div>
+                                    <?php if (count($top6) > 0): ?>
+                                        <?php foreach ($top6 as $index => $user): ?>
+                                            <div class="count-area-content">
+                                                <div class="count-digit"><?php echo $index + 1; ?></div>
+                                                <div class="count-title">
+                                                    <?php echo $user['firstname'] . " " . $user['lastname']; ?> - Score:
+                                                    <?php echo $user['highest_score']; ?>
+                                                </div>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h2>Statistics & Probability Leaderboards</h2>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="row">
+                                <div class="col-12">
+                                    <?php if (count($top62) > 0): ?>
+                                        <?php foreach ($top62 as $index2 => $user2): ?>
+                                            <div class="count-area-content">
+                                                <div class="count-digit"><?php echo $index2 + 1; ?></div>
+                                                <div class="count-title">
+                                                    <?php echo $user2['firstname'] . " " . $user2['lastname']; ?> - Score:
+                                                    <?php echo $user2['highest_score2']; ?>
+                                                </div>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 text-center mt-5">
+                    <div class="main-button-red">
+                        <a href="leaderboards">Show all leaderboards</a>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <?php
-    if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
-        ?>
-        <section class="contact-us" id="contact">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-9 align-self-center">
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <form id="contact" action="" method="post">
-                                    <div class="row">
-                                        <div class="col-lg-12">
-                                            <h2>Let's get in touch</h2>
-                                        </div>
-                                        <div class="col-lg-4">
-                                            <fieldset>
-                                                <input name="name" type="text" id="name" placeholder="YOURNAME...*"
-                                                    required="">
-                                            </fieldset>
-                                        </div>
-                                        <div class="col-lg-4">
-                                            <fieldset>
-                                                <input name="email" type="text" id="email" pattern="[^ @]*@[^ @]*"
-                                                    placeholder="YOUR EMAIL..." required="">
-                                            </fieldset>
-                                        </div>
-                                        <div class="col-lg-4">
-                                            <fieldset>
-                                                <input name="subject" type="text" id="subject" placeholder="SUBJECT...*"
-                                                    required="">
-                                            </fieldset>
-                                        </div>
-                                        <div class="col-lg-12">
-                                            <fieldset>
-                                                <textarea name="message" type="text" class="form-control" id="message"
-                                                    placeholder="YOUR MESSAGE..." required=""></textarea>
-                                            </fieldset>
-                                        </div>
-                                        <div class="col-lg-12">
-                                            <fieldset>
-                                                <button type="submit" id="form-submit" class="button">SEND MESSAGE
-                                                    NOW</button>
-                                            </fieldset>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="right-info">
-                            <ul>
-                                <li>
-                                    <h6>Phone Number</h6>
-                                    <span>0991-071-4891</span>
-                                </li>
-                                <li>
-                                    <h6>Email Address</h6>
-                                    <span>jb.manalac@sapc.edu.phu</span>
-                                    <span>klc.pitogo@sapc.edu.ph</span>
-                                </li>
-                                <li>
-                                    <h6>Street Address</h6>
-                                    <span>National Highway Brgy. Sta. Clara Sur, Pila Laguna</span>
-                                </li>
-                                <li>
-                                    <h6>Website URL</h6>
-                                    <span>www.mathmaster.edu</span>
-                                </li>
-                            </ul>
-                        </div>
+    <section class="contact-us" id="contact">
+        <div class="container">
+            <div class="row">
+                <div class="col"></div>
+                <div class="col-lg-4">
+                    <div class="right-info">
+                        <ul>
+                            <li>
+                                <h6>Phone Number</h6>
+                                <span>0991-071-4891</span>
+                            </li>
+                            <li>
+                                <h6>Email Address</h6>
+                                <span>jb.manalac@sapc.edu.phu</span>
+                                <span>klc.pitogo@sapc.edu.ph</span>
+                            </li>
+                            <li>
+                                <h6>Street Address</h6>
+                                <span>National Highway Brgy. Sta. Clara Sur, Pila Laguna</span>
+                            </li>
+                            <li>
+                                <h6>Website URL</h6>
+                                <span>www.mathmaster.edu</span>
+                            </li>
+                        </ul>
                     </div>
                 </div>
+                <div class="col"></div>
             </div>
-            <?php include "partials/footer.php"; ?>
-        </section>
-        <?php
-    } else {
-        ?>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <?php
+        </div>
+        <?php include "partials/footer.php"; ?>
+    </section>
 
-        $firstname = $username = $lastname = $email = $password = $confirm_password = "";
-        $firstname_err = $username_err = $lastname_err = $email_err = $password_err = $confirm_password_err = "";
-
-        if (isset($_POST['submit'])) {
-
-            if (empty(trim($_POST["email"]))) {
-                $email_err = "Please enter an email.";
-            } else {
-                $param_email = trim($_POST["email"]);
-
-                // Check if the email ends with @sapc.edu.ph
-                if (!preg_match("/^[a-zA-Z0-9._%+-]+@sapc\.edu\.ph$/", $param_email)) {
-                    $email_err = "Only email addresses associated with SAPC are allowed.";
-                } else {
-                    $sql = "SELECT user_id FROM users WHERE email = ?";
-
-                    if ($stmt = mysqli_prepare($link, $sql)) {
-                        mysqli_stmt_bind_param($stmt, "s", $param_email);
-
-                        if (mysqli_stmt_execute($stmt)) {
-                            mysqli_stmt_store_result($stmt);
-
-                            if (mysqli_stmt_num_rows($stmt) == 1) {
-                                $email_err = "This email is already taken.";
-                            } else {
-                                $email = $param_email;
-                            }
-                        } else {
-                            echo "<script>swal({
-                                title: 'Oops!',
-                                text: 'Something went wrong. Please try again later.',
-                                icon: 'warning',
-                                button: 'Done!',
-                            });</script>";
-                        }
-
-                        mysqli_stmt_close($stmt);
-                    }
-                }
-            }
-
-
-            if (empty(trim($_POST["username"]))) {
-                $username_err = "Please enter an username.";
-            } else {
-                $sql = "SELECT user_id FROM users WHERE username = ?";
-
-                if ($stmt = mysqli_prepare($link, $sql)) {
-                    mysqli_stmt_bind_param($stmt, "s", $param_username);
-
-                    $param_username = trim($_POST["username"]);
-
-                    if (mysqli_stmt_execute($stmt)) {
-                        mysqli_stmt_store_result($stmt);
-
-                        if (mysqli_stmt_num_rows($stmt) == 1) {
-                            $username_err = "This username is already taken.";
-                        } else {
-                            $username = trim($_POST["username"]);
-                        }
-                    } else {
-                        echo "<script>swal({
-                            title: 'Oops!',
-                            text: 'Something went wrong. Please try again later.',
-                            icon: 'warning',
-                            button: 'Done!',
-                        });</script>";
-                    }
-
-                    mysqli_stmt_close($stmt);
-                }
-            }
-
-
-            if (empty(trim($_POST["firstname"]))) {
-                $firstname_err = "Please enter first name.";
-            } else {
-                $firstname = trim($_POST["firstname"]);
-            }
-
-            if (empty(trim($_POST["lastname"]))) {
-                $lastname_err = "Please enter last name.";
-            } else {
-                $lastname = trim($_POST["lastname"]);
-            }
-
-            if (empty(trim($_POST["password"]))) {
-                $password_err = "Please enter a password.";
-            } elseif (strlen(trim($_POST["password"])) < 8) {
-                $password_err = "Password must have at least 8 characters.";
-            } elseif (!preg_match('/[A-Z]/', trim($_POST["password"]))) {
-                $password_err = "Password must include at least one uppercase letter.";
-            } elseif (!preg_match('/[a-z]/', trim($_POST["password"]))) {
-                $password_err = "Password must include at least one lowercase letter.";
-            } elseif (!preg_match('/[0-9]/', trim($_POST["password"]))) {
-                $password_err = "Password must include at least one number.";
-            } elseif (!preg_match('/[\W]/', trim($_POST["password"]))) {
-                $password_err = "Password must include at least one special character.";
-            } else {
-                $password = trim($_POST["password"]);
-            }
-
-
-            if (empty(trim($_POST["confirm_password"]))) {
-                $confirm_password_err = "Please confirm your password.";
-            } else {
-                $confirm_password = trim($_POST["confirm_password"]);
-                if ($password != $confirm_password) {
-                    $confirm_password_err = "Passwords did not match.";
-                }
-            }
-
-            if (empty($firstanme_err) && empty($lastname_err) && empty($username_err) && empty($email_err) && empty($password_err) && empty($confirm_password_err)) {
-
-                $sql = "INSERT INTO users (firstname, lastname, username, email, password) VALUES (?, ?, ?, ?, ?)";
-
-                if ($stmt = mysqli_prepare($link, $sql)) {
-                    mysqli_stmt_bind_param($stmt, "sssss", $param_firstname, $param_lastname, $param_username, $param_email, $param_password);
-
-                    $param_firstname = $firstname;
-                    $param_lastname = $lastname;
-                    $param_username = $username;
-                    $param_email = $email;
-                    $param_password = password_hash($password, PASSWORD_DEFAULT);
-
-                    if (mysqli_stmt_execute($stmt)) {
-                        echo "<script>swal({
-                            title: 'Success!',
-                            text: 'Account Registered Successfully!',
-                            icon: 'success',
-                            closeOnClickOutside: false,
-                            button: false
-                        });</script>";
-                        echo '<meta http-equiv="Refresh" content="3; url=index">';
-                    } else {
-                        echo "<script>swal({
-                            title: 'Oops!',
-                            text: 'Something went wrong. Please try again later.',
-                            icon: 'warning',
-                            button: 'Done!',
-                        });</script>";
-                    }
-
-                    mysqli_stmt_close($stmt);
-                }
-            }
-
-            mysqli_close($link);
-        }
-
-        ?>
-
-        <style>
-            .invalid-feedback {
-                margin-left: 10px;
-                margin-top: -30px !important;
-                margin-bottom: 10px !important;
-            }
-
-            .form-label {
-                margin-left: 10px;
-                margin-top: 20px !important;
-                margin-bottom: -5px !important;
-            }
-        </style>
-        <section class="contact-us" id="signup">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-9 align-self-center">
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <form id="contact" action="" method="post">
-                                    <div class="row">
-                                        <div class="col-lg-12">
-                                            <h2>Let's get started</h2>
-                                        </div>
-                                        <div class="col-lg-5">
-                                            <label class="form-label">Username</label>
-                                            <fieldset>
-                                                <input type="text" id="sysuser-sys_username"
-                                                    class="form-control <?php echo (!empty($username_err)) ? 'is-invalid' : ''; ?>"
-                                                    name="username" maxlength="500" placeholder="Username"
-                                                    aria-required="true" value="<?php echo $username; ?>">
-                                                <div class="invalid-feedback"><?php echo $username_err; ?>
-                                            </fieldset>
-                                        </div>
-                                        <div class="col-lg-7">
-                                            <label class="form-label">Email</label>
-                                            <fieldset>
-                                                <input type="text"
-                                                    class="form-control <?php echo (!empty($email_err)) ? 'is-invalid' : ''; ?>"
-                                                    name="email" maxlength="500" placeholder="Email address"
-                                                    aria-required="true" value="<?php echo $email; ?>">
-                                                <div class="invalid-feedback"><?php echo $email_err; ?>
-                                            </fieldset>
-                                        </div>
-                                        <div class="col-lg-6">
-                                            <label class="form-label">First Name</label>
-                                            <fieldset>
-                                                <input type="text"
-                                                    class="form-control <?php echo (!empty($firstname_err)) ? 'is-invalid' : ''; ?> text-input"
-                                                    name="firstname" maxlength="500" placeholder="First name"
-                                                    aria-required="true" value="<?php echo $firstname; ?>">
-                                                <div class="invalid-feedback"><?php echo $firstname_err; ?></div>
-                                            </fieldset>
-                                        </div>
-                                        <div class="col-lg-6">
-                                            <label class="form-label">Last Name</label>
-                                            <fieldset>
-                                                <input type="text"
-                                                    class="form-control <?php echo (!empty($lastname_err)) ? 'is-invalid' : ''; ?> text-input"
-                                                    name="lastname" maxlength="500" placeholder="Last name"
-                                                    aria-required="true" value="<?php echo $lastname; ?>">
-                                                <div class="invalid-feedback"><?php echo $lastname_err; ?>
-                                            </fieldset>
-                                        </div>
-                                        <div class="col-lg-6">
-                                            <label class="form-label">Password</label>
-                                            <fieldset class="password-container">
-                                                <input type="password" id="sysuser-sys_password"
-                                                    class="form-control <?php echo (!empty($password_err)) ? 'is-invalid' : ''; ?>"
-                                                    name="password" maxlength="500" placeholder="Password"
-                                                    aria-required="true" value="<?php echo $password; ?>">
-                                                <i class="fa fa-eye toggle-password" data-target="sysuser-sys_password"></i>
-                                            </fieldset>
-                                            <div class="invalid-feedback">
-                                                <?php echo $password_err; ?>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-lg-6">
-                                            <label class="form-label">Confirm Password</label>
-                                            <fieldset class="password-container">
-                                                <input type="password" id="sysuser-password_repeat"
-                                                    class="form-control <?php echo (!empty($confirm_password_err)) ? 'is-invalid' : ''; ?>"
-                                                    name="confirm_password" placeholder="Verify Password"
-                                                    aria-required="true" value="<?php echo $confirm_password; ?>">
-                                                <i class="fa fa-eye toggle-password"
-                                                    data-target="sysuser-password_repeat"></i>
-                                            </fieldset>
-                                            <div class="invalid-feedback">
-                                                <?php echo $confirm_password_err; ?>
-                                            </div>
-                                        </div>
-
-                                        <style>
-                                            .password-container {
-                                                position: relative;
-                                                display: flex;
-                                                align-items: center;
-                                            }
-
-                                            .password-container input {
-                                                width: 100%;
-                                                padding-right: 40px;
-                                            }
-
-                                            .password-container .toggle-password {
-                                                position: absolute;
-                                                right: 10px;
-                                                top: 20px;
-                                                transform: translateY(-50%);
-                                                cursor: pointer;
-                                                color: #999;
-                                            }
-
-                                            .password-container .toggle-password:hover {
-                                                color: #333;
-                                            }
-
-                                            .invalid-feedback {
-                                                display: block;
-                                                margin-top: 5px;
-                                            }
-                                        </style>
-
-                                        <script>
-                                            document.querySelectorAll('.toggle-password').forEach(icon => {
-                                                icon.addEventListener('click', function () {
-                                                    var input = document.getElementById(this.getAttribute('data-target'));
-                                                    if (input.type === "password") {
-                                                        input.type = "text";
-                                                        this.classList.remove("fa-eye");
-                                                        this.classList.add("fa-eye-slash");
-                                                    } else {
-                                                        input.type = "password";
-                                                        this.classList.remove("fa-eye-slash");
-                                                        this.classList.add("fa-eye");
-                                                    }
-                                                });
-                                            });
-
-                                            document.getElementById('toggle-passwords').addEventListener('change', function () {
-                                                var passwordFields = [
-                                                    document.getElementById('sysuser-sys_password'),
-                                                    document.getElementById('sysuser-password_repeat')
-                                                ];
-
-                                                passwordFields.forEach(field => {
-                                                    field.type = this.checked ? 'text' : 'password';
-                                                });
-                                            });
-                                        </script>
-
-                                        <div class="col-12 text-end mt-5 mb-3">
-                                            <a href="signin">Already have an account? Signin here.</a>
-                                        </div>
-
-
-                                        <div class="col-lg-12">
-                                            <fieldset>
-                                                <button type="submit" id="form-submit" name="submit" class="button">SIGN
-                                                    UP</button>
-                                            </fieldset>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="right-info">
-                            <ul>
-                                <li>
-                                    <h6>Phone Number</h6>
-                                    <span>0991-071-4891</span>
-                                </li>
-                                <li>
-                                    <h6>Email Address</h6>
-                                    <span>jb.manalac@sapc.edu.phu</span>
-                                    <span>klc.pitogo@sapc.edu.ph</span>
-                                </li>
-                                <li>
-                                    <h6>Street Address</h6>
-                                    <span>National Highway Brgy. Sta. Clara Sur, Pila Laguna</span>
-                                </li>
-                                <li>
-                                    <h6>Website URL</h6>
-                                    <span>www.mathmaster.edu</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <?php include "partials/footer.php"; ?>
-        </section>
-        <?php
-    }
-    ?>
 
     <?php include "partials/script.php"; ?>
 
